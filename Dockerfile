@@ -27,9 +27,6 @@ RUN apk add --no-cache \
     supervisor \
     zlib-dev
 
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install intl
-
 # Install php extensions
 RUN chmod +x /usr/local/bin/install-php-extensions && \
     install-php-extensions \
@@ -50,8 +47,6 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
     soap \
     mongodb \
     zip
-
-RUN pecl install -o -f redis \	&&  rm -rf /tmp/pear \	&&  docker-php-ext-enable redis
 
 RUN apk update && apk upgrade &&\
     apk add supervisor  openssh nginx
