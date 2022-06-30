@@ -39,7 +39,7 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
     exif \
     gd \
     intl \
-    docker-php-ext-install mysqli \
+    mysqli \
     pdo \
     pdo_mysql \
     pdo_pgsql \
