@@ -27,6 +27,9 @@ RUN apk add --no-cache \
     supervisor \
     zlib-dev
 
+RUN docker-php-ext-configure intl
+RUN docker-php-ext-install intl
+
 # Install php extensions
 RUN chmod +x /usr/local/bin/install-php-extensions && \
     install-php-extensions \
@@ -39,7 +42,6 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
     exif \
     gd \
     intl \
-    docker-php-ext-install \
     mysqli \
     pdo \
     pdo_mysql \
