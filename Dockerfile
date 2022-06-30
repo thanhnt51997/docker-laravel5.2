@@ -1,7 +1,7 @@
 FROM php:7.2-fpm-alpine
 
 # Add docker-php-extension-installer script
-ADD https://github.com/mlocati-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 # Install dependencies
 RUN apk add --no-cache \
