@@ -1,7 +1,7 @@
 FROM php:7.2-fpm-alpine
 
 # Add docker-php-extension-installer script
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+ADD https://github.com/mlocati-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 # Install dependencies
 RUN apk add --no-cache \
@@ -52,19 +52,19 @@ RUN apk update && apk upgrade &&\
 ENV PATH ./vendor/bin:/composer/vendor/bin:/root/.composer/vendor/bin:/usr/local/bin:$PATH
 
 # Supervisor config
-COPY ./docker/supervisord.conf /etc/supervisord.conf
+COPY ./supervisord.conf /etc/supervisord.conf
 
 # Override nginx's default config
-COPY ./docker/config/app.conf /etc/nginx/nginx.conf
+COPY ./config/app.conf /etc/nginx/nginx.conf
 
 # Override default nginx welcome page
 COPY . /var/www/html
 
 # Copy Scripts
-COPY ./docker/start.sh /start.sh
+COPY ./start.sh /start.sh
 
 # Copy crontab file to the cron.d directory
-COPY ./docker/config/crontab /etc/cron.d/crontab
+COPY ./config/crontab /etc/cron.d/crontab
 
 # Give execution rights on the cron job
 RUN chmod 0777 /etc/cron.d/crontab
