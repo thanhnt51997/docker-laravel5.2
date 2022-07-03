@@ -1,59 +1,51 @@
-FROM php:7.2-fpm-alpine
+FROM php:7.3.2-fpm
 
 # Add docker-php-extension-installer script
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 # Install dependencies
-RUN apk add --no-cache \
-    bash \
-    curl \
-    freetype-dev \
-    g++ \
-    gcc \
-    git \
-    icu-dev \
-    icu-libs \
-    libc-dev \
+RUN apt-get update \
+&& apt-get install -y --no-install-recommends \
+	apk add --no-cache \
+    libzip4 \
     libzip-dev \
-    make \
-    mysql-client \
-    nodejs \
-    npm \
-    oniguruma-dev \
-    yarn \
-    openssh-client \
-    postgresql-libs \
-    rsync \
-    zlib-dev
+    unzip \
+	openssh-client \
+    libmcrypt-dev \
+    libssl-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+&& apt-get autoremove \
+&& apt-get clean \
+&& rm -r /var/lib/apt/lists/* \
+&& cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
 
-# Install php extensions
-RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions \
-    @composer \
-    redis-stable \
-    imagick-stable \
-    xdebug-stable \
-    bcmath \
-    calendar \
-    exif \
-    gd \
-    intl \
-    mysqli \
-    pdo \
-    pdo_mysql \
-    pdo_pgsql \
-    pcntl \
-    soap \
-    mongodb \
-    zip
+# https://github.com/docker-library/php/issues/541
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/ \
+&& docker-php-ext-install gd \
+&& docker-php-ext-install pdo_mysql zip mysqli \
+&& pecl install mcrypt-1.0.2 \
+&& docker-php-ext-enable mcrypt \
+&& pecl install msgpack \
+&& echo "extension=msgpack.so" > /usr/local/etc/php/conf.d/msgpack.ini \
+&& pecl install mongodb \
+&& echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini \
+&& pecl install redis \
+&& echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini \
+&& pecl clear-cache
 
+#RUN apk update && apk upgrade &&\
+#    apk add  openssh nginx
 RUN apk update && apk upgrade &&\
+    apk add supervisor  openssh nginx
     apk add  openssh nginx
+
 # Add local and global vendor bin to PATH.
 ENV PATH ./vendor/bin:/composer/vendor/bin:/root/.composer/vendor/bin:/usr/local/bin:$PATH
 
 # Supervisor config
-#COPY ./supervisord.conf /etc/supervisord.conf
+COPY ./supervisord.conf /etc/supervisord.conf
 
 # Override nginx's default config
 COPY ./config/app.conf /etc/nginx/nginx.conf
@@ -71,14 +63,12 @@ COPY ./config/crontab /etc/cron.d/crontab
 RUN chmod 0777 /etc/cron.d/crontab
 
 # Apply cron job
-RUN /usr/bin/crontab /etc/cron.d/crontab
+RUN /etc/cron.d/crontab
 
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
 
 WORKDIR /var/www/html
-RUN echo "extension=mongodb.so" > /usr/local/etc/php/php.ini
-RUN echo "extension=mongodb.so" > /usr/local/etc/php/mongodb.ini
 
 #RUN composer update
 #RUN php artisan schedule:clear-cache
