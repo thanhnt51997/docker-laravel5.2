@@ -53,7 +53,7 @@ RUN apk update && apk upgrade &&\
 ENV PATH ./vendor/bin:/composer/vendor/bin:/root/.composer/vendor/bin:/usr/local/bin:$PATH
 
 # Supervisor config
-#COPY ./supervisord.conf /etc/supervisord.conf
+COPY ./supervisord.conf /etc/supervisord.conf
 
 # Override nginx's default config
 COPY ./config/app.conf /etc/nginx/nginx.conf
