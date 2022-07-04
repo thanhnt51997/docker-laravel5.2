@@ -24,6 +24,7 @@ RUN apk add --no-cache \
     openssh-client \
     postgresql-libs \
     rsync \
+	supervisor \
     zlib-dev
 
 # Install php extensions
@@ -48,7 +49,7 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
     zip
 
 RUN apk update && apk upgrade &&\
-    apk add  openssh nginx
+    apk add supervisor  openssh nginx
 # Add local and global vendor bin to PATH.
 ENV PATH ./vendor/bin:/composer/vendor/bin:/root/.composer/vendor/bin:/usr/local/bin:$PATH
 
